@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import "../services" as Services
 
 PanelWindow {
     id: panel
@@ -92,6 +93,65 @@ PanelWindow {
                 // Limit text width to avoid overlap with other elements
                 width: Math.min(implicitWidth, parent.width - 300)
                 elide: Text.ElideRight
+            }
+
+            Text {
+                id: audioWidget
+                text: {
+                    if (!Services.Audio.ready || !Services.Audio.sink?.audio) return "🔇 --"
+                    
+                    var volume = Math.round(Services.Audio.sink.audio.volume * 100)
+                    var muted = Services.Audio.sink.audio.muted
+                    
+                    var icon = muted ? "🔇" : 
+                               volume === 0 ? "🔇" :
+                               volume < 30 ? "🔈" :
+                               volume < 70 ? "🔉" : "🔊"
+                    
+                    return icon + " " + (muted ? "MUTE" : volume + "%")
+                }
+                color: Services.Audio.sink?.audio?.muted ? "#ff6b6b" : "#ffffff"
+                font.pixelSize: 14
+                font.family: "JetBrains Mono Nerd Font, sans-serif"
+                anchors {
+                    right: timeDisplay.left
+                    verticalCenter: parent.verticalCenter
+                    rightMargin: 20
+                }
+            }
+
+            Text {
+                id: cliphistWidget
+                text: "📋 " + (Services.Cliphist.entries.length > 0 ? Services.Cliphist.entries.length : "0")
+                color: "#ffffff"
+                font.pixelSize: 14
+                font.family: "JetBrains Mono Nerd Font, sans-serif"
+                anchors {
+                    right: audioWidget.left
+                    verticalCenter: parent.verticalCenter
+                    rightMargin: 20
+                }
+                
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        // Hier könnte später ein Popup oder Menü geöffnet werden
+                        console.log("Cliphist clicked - " + Services.Cliphist.entries.length + " entries")
+                        Services.Cliphist.refresh()
+                    }
+                }
+                
+                // Tooltip-ähnlicher Hover-Effekt
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onEntered: parent.color = "#5ef5f7"
+                    onExited: parent.color = "#ffffff"
+                    onClicked: {
+                        console.log("Cliphist clicked - " + Services.Cliphist.entries.length + " entries")
+                        Services.Cliphist.refresh()
+                    }
+                }
             }
 
             Text {
