@@ -85,7 +85,8 @@ PanelWindow {
                 
                 text: Hyprland.activeToplevel ? Hyprland.activeToplevel.title : "Desktop"
                 color: "#ffffff"
-                font.pixelSize: 13
+                font.bold: true
+                font.pixelSize: 14
                 font.family: "JetBrains Mono Nerd Font, sans-serif"
                 
                 // Limit text width to avoid overlap with other elements
